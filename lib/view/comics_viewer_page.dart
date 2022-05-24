@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xkcd_comics_app/repository/comics_repo.dart';
 import 'package:xkcd_comics_app/shared/widgets/icons_button_widget.dart';
 
 import '../main.dart';
@@ -11,6 +12,12 @@ class ComicsViewerPage extends StatefulWidget {
 }
 
 class _ComicsViewerPageState extends State<ComicsViewerPage> {
+  @override
+  void initState() async {
+    super.initState();
+    await ComicsRepo().getComics();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,35 +40,32 @@ class _ComicsViewerPageState extends State<ComicsViewerPage> {
                   //prev
                   iconsButton(
                     onPressed: () {
-                      print('prev');
+                      // print('prev');
                     },
                     buttonIcon: Icons.navigate_before,
                   ),
 
-                  const SizedBox(
-                    width: 15,
-                  ),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.03),
                   //title
                   const Text('comic name'),
 
-                  const SizedBox(
-                    width: 15,
-                  ),
-
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.03),
                   //next
                   iconsButton(
                     onPressed: () {
-                      print('next');
+                      // print('next');
                     },
                     buttonIcon: Icons.navigate_next,
                   ),
                 ],
               ),
 
+              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
               //image
               Container(
                 width: double.infinity,
-                height: 400.0,
+                // height: 400.0,
+                height: MediaQuery.of(context).size.height * 0.6,
                 child: Image.network(
                   "https://imgs.xkcd.com/comics/goofs.png",
                   fit: BoxFit.contain,
@@ -73,9 +77,7 @@ class _ComicsViewerPageState extends State<ComicsViewerPage> {
                 child: Text('Month day, year'),
               ),
 
-              const SizedBox(
-                height: 15,
-              ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
 
               //transcript
               Container(
