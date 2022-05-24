@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:xkcd_comics_app/repository/comics_repo.dart';
+import 'package:provider/provider.dart';
+import 'package:xkcd_comics_app/data/response/status.dart';
+import 'package:xkcd_comics_app/models/comics_model.dart';
+import 'package:xkcd_comics_app/shared/widgets/GenericErrorWidget.dart';
+import 'package:xkcd_comics_app/shared/widgets/GenericLoadingWidget.dart';
 import 'package:xkcd_comics_app/shared/widgets/icons_button_widget.dart';
+import 'package:xkcd_comics_app/view_model/comics_vm.dart';
 
 import '../main.dart';
 
@@ -12,10 +17,12 @@ class ComicsViewerPage extends StatefulWidget {
 }
 
 class _ComicsViewerPageState extends State<ComicsViewerPage> {
+  final ComicsVM comicsModel = ComicsVM();
+
   @override
-  void initState() async {
+  void initState() {
     super.initState();
-    await ComicsRepo().getComics();
+    comicsModel.fetchComics();
   }
 
   @override
@@ -26,68 +33,91 @@ class _ComicsViewerPageState extends State<ComicsViewerPage> {
         title: const Text(MyApp.title),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(15),
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              //buttons and title
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  //prev
-                  iconsButton(
-                    onPressed: () {
-                      // print('prev');
-                    },
-                    buttonIcon: Icons.navigate_before,
-                  ),
+      body: ChangeNotifierProvider<ComicsVM>(
+        create: (BuildContext context) => comicsModel,
+        child: Consumer<ComicsVM>(builder: (context, comicsModel, _) {
+          switch (comicsModel.comics.status) {
+            case Status.LOADING:
+              return GenericLoadingWidget();
+            case Status.ERROR:
+              return GenericErrorWidget(comicsModel.comics.message ?? "NA");
+            case Status.COMPLETED:
+              return _comicsWidget(comicsModel.comics.data!);
 
-                  SizedBox(width: MediaQuery.of(context).size.width * 0.03),
-                  //title
-                  const Text('comic name'),
-
-                  SizedBox(width: MediaQuery.of(context).size.width * 0.03),
-                  //next
-                  iconsButton(
-                    onPressed: () {
-                      // print('next');
-                    },
-                    buttonIcon: Icons.navigate_next,
-                  ),
-                ],
-              ),
-
-              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-              //image
-              Container(
-                width: double.infinity,
-                // height: 400.0,
-                height: MediaQuery.of(context).size.height * 0.6,
-                child: Image.network(
-                  "https://imgs.xkcd.com/comics/goofs.png",
-                  fit: BoxFit.contain,
-                ),
-              ),
-
-              //date
-              Container(
-                child: Text('Month day, year'),
-              ),
-
-              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-
-              //transcript
-              Container(
-                child: Text(
-                    "The film is set in 2018, but when Commander Bremberly chases the hologram through Times Square, there's a billboard for Avengers: Age of Ultron. Depending on the date, that billboard would have been advertising either Infinity War or this movie."),
-              )
-            ],
-          ),
-        ],
+            default:
+          }
+          return Container();
+        }),
       ),
+    );
+  }
+
+  //comics viewer widget
+  Widget _comicsWidget(Comics comicObj) {
+    return ListView(
+      padding: const EdgeInsets.all(15),
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            //buttons and title
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //prev
+                iconsButton(
+                  onPressed: () {
+                    // print('prev');
+                  },
+                  buttonIcon: Icons.navigate_before,
+                ),
+
+                SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+
+                //title
+                Text(comicObj.title!),
+
+                SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                //next
+                iconsButton(
+                  onPressed: () {
+                    // print('next');
+                  },
+                  buttonIcon: Icons.navigate_next,
+                ),
+              ],
+            ),
+
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+
+            //image
+            SizedBox(
+              width: double.infinity,
+              // height: 400.0,
+              height: MediaQuery.of(context).size.height * 0.5,
+              child: Image.network(
+                "${comicObj.img}",
+                fit: BoxFit.contain,
+              ),
+            ),
+
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+
+            //date
+            Text('${comicObj.month} / ${comicObj.day} / ${comicObj.year}'),
+
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+
+            //transcript
+            Container(
+              child: comicObj.transcript!.isNotEmpty
+                  ? Text(comicObj.transcript!)
+                  : Text(comicObj.alt!),
+            )
+          ],
+        ),
+      ],
     );
   }
 }

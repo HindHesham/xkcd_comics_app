@@ -8,6 +8,7 @@ class Comics {
       this.news,
       this.safeTitle,
       this.transcript,
+      this.alt,
       this.img,
       this.title});
 
@@ -19,6 +20,7 @@ class Comics {
   String? news;
   String? safeTitle;
   String? transcript;
+  String? alt;
   String? img;
   String? title;
 
@@ -31,6 +33,7 @@ class Comics {
         news: json['news'] ??= null,
         safeTitle: json['safe_title'] ??= null,
         transcript: json['transcript'] ??= null,
+        alt: json['alt'] ??= null,
         img: json['img'] ??= null,
         title: json['title'] ??= null,
       );
@@ -44,6 +47,7 @@ class Comics {
         'news': news ??= null,
         "safe_title": safeTitle ??= null,
         'transcript': transcript ??= null,
+        'alt': alt ??= null,
         'img': img ??= null,
         'title': title ??= null,
       };
