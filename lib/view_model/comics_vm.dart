@@ -12,10 +12,10 @@ class ComicsVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchComics() async {
+  Future<void> fetchComics({int? comicId}) async {
     _setComics(ApiResponse.loading());
     await _comicsRepo
-        .getComics()
+        .getComics(comicId: comicId)
         .then((value) => _setComics(ApiResponse.completed(value)))
         .onError((error, stackTrace) =>
             _setComics(ApiResponse.error(error.toString())));

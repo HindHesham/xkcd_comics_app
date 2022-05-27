@@ -10,7 +10,7 @@ class NetworkApiService extends BaseApiService {
   Future getResponse(String url) async {
     dynamic responseJson;
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(baseUrl + url));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -32,9 +32,8 @@ class NetworkApiService extends BaseApiService {
         throw UnauthorisedException(response.body.toString());
       case 500:
       default:
-        throw FetchDataException(
-            'Error occured while communication with server' +
-                ' with status code : ${response.statusCode}');
+        throw FetchDataException('Error occured while communication with server'
+            ' with status code : ${response.statusCode}');
     }
   }
 }
