@@ -1,3 +1,5 @@
+import 'dart:io';
+
 abstract class BaseApiService {
   final String baseUrl = "https://xkcd.com/";
 

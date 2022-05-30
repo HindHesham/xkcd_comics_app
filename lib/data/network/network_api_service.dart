@@ -10,7 +10,7 @@ class NetworkApiService extends BaseApiService {
   Future getResponse(String url) async {
     dynamic responseJson;
     try {
-      final response = await http.get(Uri.parse(baseUrl + url));
+      final response = await http.Client().get(Uri.parse(baseUrl + url));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -29,7 +29,7 @@ class NetworkApiService extends BaseApiService {
       case 403:
         throw UnauthorisedException(response.body.toString());
       case 404:
-        throw UnauthorisedException("Page not found");
+        throw NotFoundException(response.reasonPhrase);
       case 500:
       default:
         throw FetchDataException(

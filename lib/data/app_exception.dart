@@ -22,6 +22,10 @@ class UnauthorisedException extends AppException {
   UnauthorisedException([message]) : super(message, "Unauthorised Request: ");
 }
 
+class NotFoundException extends AppException {
+  NotFoundException([message]) : super("Not Found");
+}
+
 class InvalidInputException extends AppException {
   InvalidInputException([String? message]) : super(message, "Invalid Input: ");
 }
