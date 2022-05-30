@@ -18,37 +18,26 @@ class ComicsViewerPage extends StatefulWidget {
 
 class _ComicsViewerPageState extends State<ComicsViewerPage> {
   final ComicsVM comicsModel = ComicsVM();
-  var nowDate = DateTime.now();
+  int? currentComicId;
 
   @override
   void initState() {
     super.initState();
-    comicsModel.fetchComics();
+
+    _getCurrentComic();
+  }
+
+  // calling get current comic api
+  _getCurrentComic() {
+    comicsModel.fetchComics().then((value) => {
+          currentComicId = comicsModel.comics.data?.number,
+        });
+    return;
   }
 
   //calling prev and next Comic
   _getPrevOrNextComic(int comicId) async {
     await comicsModel.fetchComics(comicId: comicId);
-  }
-
-  //get comic date and and compare current date and comic date for shown or hidden next button
-  bool _compareCurrentDateAndComicDate(
-      String? year, String? month, String? day) {
-    if (month?.length == 1) {
-      month = "0$month";
-    }
-    String comicDate = year! + '-' + month! + '-' + day!;
-    return _getDifferenceBetweenDates(comicDate);
-  }
-
-  bool _getDifferenceBetweenDates(String comicDate) {
-    final difference = (DateTime.parse(comicDate)).difference(nowDate).inDays;
-
-    if (difference != -1) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   @override
@@ -105,12 +94,9 @@ class _ComicsViewerPageState extends State<ComicsViewerPage> {
                 Text(comicObj.title!),
 
                 SizedBox(width: MediaQuery.of(context).size.width * 0.03),
-                //next
 
-                _compareCurrentDateAndComicDate(
-                        comicsModel.comics.data!.year,
-                        comicsModel.comics.data!.month,
-                        comicsModel.comics.data!.day)
+                //next
+                currentComicId != comicObj.number
                     ? iconsButton(
                         onPressed: () {
                           _getPrevOrNextComic(comicObj.number! + 1);

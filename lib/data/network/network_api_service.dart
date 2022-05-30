@@ -29,11 +29,11 @@ class NetworkApiService extends BaseApiService {
       case 403:
         throw UnauthorisedException(response.body.toString());
       case 404:
-        throw UnauthorisedException(response.body.toString());
+        throw UnauthorisedException("Page not found");
       case 500:
       default:
-        throw FetchDataException('Error occured while communication with server'
-            ' with status code : ${response.statusCode}');
+        throw FetchDataException(
+            'Error occured while communication with server with status code : ${response.statusCode}');
     }
   }
 }
